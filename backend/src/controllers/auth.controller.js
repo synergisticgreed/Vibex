@@ -1,3 +1,4 @@
+import cloudinary from "../lib/cloudinary.js";
 import { generateToken } from "../lib/utils.js";
 import User from "../models/user.model.js";
 import bcrypt from "bcryptjs"
@@ -84,5 +85,20 @@ export const logout=(req,res)=>{
 };
 
 export const updateProfile = async (req,res)=>{
-    
+    try {
+        const {profilePic} = req.body;
+        const userId=req.user._id;
+        
+        if(!profilePic){
+            return res.status(400).json({message: "Profile pic is required"});
+        }
+
+        const uploadResponse=await cloudinary.uploader.upload(profilePic)
+        //as cloudinary is not my database , we have to update it in mongo db
+        const updatedUser= await User.findByIdAndUpdate(userId, {profilePic:uploadResponse.secure_url}, {new: true})
+        req.status(200).json(updatedUser)
+    } catch (error) {
+        console.log("error in update profile: ",error);
+        res.status(500).json({message: "Internal Server Error"});
+    }
 }
