@@ -1,14 +1,29 @@
 import React from 'react'
+import Navbar from './components/Navbar'
+import { Routes , Route} from 'react-router-dom'
+import HomePage from './pages/HomePage'
+import SignupPage from './pages/SignupPage'
+import LoginPage from './pages/LoginPage'
+import SetingsPage from './pages/SetingsPage'
+import ProfilePage from './pages/ProfilePage'
 
 function App() {
   return (
-    <div className='text-red-500'><button className="btn">Button</button>
-    <button className="btn btn-neutral">Neutral</button>
-    <button className="btn btn-primary">Primary</button>
-    <button className="btn btn-secondary">Secondary</button>
-    <button className="btn btn-accent">Accent</button>
-    <button className="btn btn-ghost">Ghost</button>
-    <button className="btn btn-link">Link</button></div>
+    <div>
+      <Navbar/>
+
+      <Routes>
+        <Route path="/"  element={<HomePage />} />
+        <Route path="/signup"  element={<SignupPage />} />
+        <Route path="/login"  element={<LoginPage />} />
+        <Route path="/settings"  element={<SetingsPage />} />
+        <Route path="/profile"  element={<ProfilePage />} />
+
+
+
+      </Routes>
+
+    </div>
     
   )
 }
