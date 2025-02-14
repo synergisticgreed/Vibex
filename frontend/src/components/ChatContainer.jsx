@@ -7,11 +7,14 @@ import MessageSkeleton from './skeletons/MessageSkeleton'
 import { useAuthStore } from '../store/useAuthStore'
 import { formatMessageTime } from '../lib/utils'
 const ChatContainer = () => {
-    const {messages, getMessages, isMessagesLoading, selectedUser} = useChatStore()
+    const {messages, getMessages, isMessagesLoading, selectedUser, subscribeToMessages, unsubscribeFromMessages} = useChatStore()
 
     useEffect(()=>{
-        getMessages(selectedUser._id)
-    },[selectedUser._id, getMessages])
+        getMessages(selectedUser._id);
+
+        subscribeToMessages();
+        return ()=> unsubscribeFromMessages();
+    },[selectedUser._id, getMessages, subscribeToMessages, unsubscribeFromMessages])
     const {authUser} = useAuthStore()
     if(isMessagesLoading)  {
         return (
