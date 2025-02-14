@@ -12,6 +12,7 @@ const ChatContainer = () => {
     useEffect(()=>{
         getMessages(selectedUser._id)
     },[selectedUser._id, getMessages])
+    const {authUser} = useAuthStore()
     if(isMessagesLoading)  {
         return (
         <div className="flex-1 flex flex-col overflow-auto">
@@ -21,7 +22,7 @@ const ChatContainer = () => {
         </div>
       );
     }
-    const {authUser} = useAuthStore()
+    
     
   return (
     <div className="flex-1 flex flex-col overflow-auto">
@@ -36,8 +37,8 @@ const ChatContainer = () => {
             <div className='chat-image avatar'>
               <div className='size-10 rounded-full border'>
                 <img 
-                src={message.senderId===authUser._id ? authUser.profilePic || "/avatar.png" : 
-                  selectedUser.profilePic || "/avatar.png"}
+                src={message.senderId===authUser._id ? authUser.profilePic || "/avatar.png" 
+                  : selectedUser.profilePic || "/avatar.png"}
                 alt='profile pic'
                 />
               </div>
