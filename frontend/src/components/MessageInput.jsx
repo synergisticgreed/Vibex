@@ -1,53 +1,73 @@
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState } from 'react';
 import { useChatStore } from '../store/useChatStore';
 import { Image, Send, X } from 'lucide-react';
 import toast from 'react-hot-toast';
+import imageCompression from 'browser-image-compression'; // ✅ Import this
 
 const MessageInput = () => {
-    const [text, setText] = useState("");
+  const [text, setText] = useState("");
   const [imagePreview, setImagePreview] = useState(null);
   const fileInputRef = useRef(null);
   const { sendMessage } = useChatStore();
 
-  const handleImageChange = (e)=>{
-    const file=e.target.files[0];
-    if(!file.type.startsWith("image/")){
-        toast.error("Please select an image file");
-        return ;
+  const handleImageChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file || !file.type.startsWith("image/")) {
+      toast.error("Please select a valid image file");
+      return;
     }
 
-    const reader = new FileReader();
-    reader.onloadend = ()=> {
-        setImagePreview(reader.result);
-    };
-    reader.readAsDataURL(file);
+    try {
+      const options = {
+        maxSizeMB: 1, // Resize to 1MB or less
+        maxWidthOrHeight: 1024, // Resize longest side to 1024px
+        useWebWorker: true,
+      };
+
+      const compressedFile = await imageCompression(file, options);
+
+      const base64 = await convertToBase64(compressedFile);
+      setImagePreview(base64);
+    } catch (err) {
+      console.error("Image compression error:", err);
+      toast.error("Failed to compress image");
+    }
   };
 
-  const removeImage=()=>{
-    setImagePreview(null);
-    if(fileInputRef.current) fileInputRef.current.value= "";
-  }
+  const convertToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
+  };
 
-  const handleSendMessage = async(e)=>{
+  const removeImage = () => {
+    setImagePreview(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const handleSendMessage = async (e) => {
     e.preventDefault();
-    if(!text.trim() && !imagePreview) return ;
+    if (!text.trim() && !imagePreview) return;
     try {
-        await sendMessage({
-          text: text.trim(),
-          image: imagePreview,
-        });
-  
-        // Clear form
-        setText("");
-        setImagePreview(null);
-        if (fileInputRef.current) fileInputRef.current.value = "";
-      } catch (error) {
-        console.error("Failed to send message:", error);
-      }
-  }
+      await sendMessage({
+        text: text.trim(),
+        image: imagePreview,
+      });
+
+      setText("");
+      setImagePreview(null);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    } catch (error) {
+      console.error("Failed to send message:", error);
+    }
+  };
+
   return (
     <div className='p-4 w-full'>
-         {imagePreview && (
+      {imagePreview && (
         <div className="mb-3 flex items-center gap-2">
           <div className="relative">
             <img
@@ -67,9 +87,7 @@ const MessageInput = () => {
         </div>
       )}
 
-
-
-<form onSubmit={handleSendMessage} className="flex items-center gap-2">
+      <form onSubmit={handleSendMessage} className="flex items-center gap-2">
         <div className="flex-1 flex gap-2">
           <input
             type="text"
@@ -104,7 +122,7 @@ const MessageInput = () => {
         </button>
       </form>
     </div>
-  )
-}
+  );
+};
 
-export default MessageInput
+export default MessageInput;

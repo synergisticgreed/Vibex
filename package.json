@@ -17,5 +17,8 @@
     "url": "https://github.com/synergisticgreed/Vibex/issues"
   },
   "homepage": "https://github.com/synergisticgreed/Vibex#readme",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "browser-image-compression": "^2.0.2"
+  }
 }
