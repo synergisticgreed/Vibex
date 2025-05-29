@@ -28,3 +28,5 @@ Vibex is a real-time messaging web application built using the MERN stack. It en
 - **Authentication**: JWT (Access and Refresh Tokens)  
 - **Real-Time Communication**: Socket.IO  
 - **State Management**: Zustand
+
+Website: [https://vibex-9i4v.onrender.com](https://vibex-9i4v.onrender.com)
